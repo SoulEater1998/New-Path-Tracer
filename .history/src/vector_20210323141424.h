@@ -3,15 +3,12 @@
 #include <algorithm>
 #include <math.h>
 #include <stdint.h>
-#include <windows.h>
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h>
-using namespace DirectX;
-using namespace DirectX::PackedVector;
+
 // Vector 3
-struct Vec : XMFLOAT3 {
-    
-    Vec(float x_ = 0, float y_ = 0, float z_ = 0) : XMFLOAT3(x_, y_, z_) {}
+struct Vec {
+    double x, y, z;
+
+    Vec(double x_ = 0, double y_ = 0, double z_ = 0) :x(x_), y(y_), z(z_) {}
 
     // Return x,y, and z component for 0, 1, and 2 respectively
     double axis(uint32_t axis){

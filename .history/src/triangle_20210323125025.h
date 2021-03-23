@@ -7,7 +7,6 @@
 #include "vector.h"
 #include "aabbox.h"
 #include "material.h"
-using namespace std;
 
 struct Triangle {
     Vec v0, v1, v2;     // Vertex world space coordinates
@@ -24,14 +23,14 @@ struct Triangle {
     // Returns axis aligned bounding box that contains the triangle
     AABBox get_bounding_box(){
         Vec bl = Vec(
-                min (min(v0.x, v1.x), v2.x ) ,
-                min (min(v0.y, v1.y), v2.y ) ,
-                min (min(v0.z, v1.z), v2.z )
+                std::min (std::min(v0.x, v1.x), v2.x ) ,
+                std::min (std::min(v0.y, v1.y), v2.y ) ,
+                std::min (std::min(v0.z, v1.z), v2.z )
         );
         Vec tr = Vec(
-                max (max(v0.x, v1.x), v2.x ) ,
-                max (max(v0.y, v1.y), v2.y ) ,
-                max (max(v0.z, v1.z), v2.z )
+                std::max (std::max(v0.x, v1.x), v2.x ) ,
+                std::max (std::max(v0.y, v1.y), v2.y ) ,
+                std::max (std::max(v0.z, v1.z), v2.z )
         );
 
         return AABBox(bl, tr);

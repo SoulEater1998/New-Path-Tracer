@@ -4,20 +4,35 @@
 #include <math.h>
 #include <stdint.h>
 #include <windows.h>
-#include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 using namespace DirectX;
 using namespace DirectX::PackedVector;
+
 // Vector 3
-struct Vec : XMFLOAT3 {
-    
-    Vec(float x_ = 0, float y_ = 0, float z_ = 0) : XMFLOAT3(x_, y_, z_) {}
+struct Vec {
+    XMFLOAT3 vec3;
+
+    Vec(float x_=0, float y_=0, float z_=0){
+        vec3.x = x_;
+        vec3.y = y_;
+        vec3.z = z_;
+    }
 
     // Return x,y, and z component for 0, 1, and 2 respectively
     double axis(uint32_t axis){
         if (axis == 0) return x;
         if (axis == 1) return y;
         if (axis == 2) return z;
+        switch (axis){
+        case 0:
+            return vec3.x;
+        case 1:
+            return vec3.y;
+        case 2:
+            return vec3.z;
+        default:
+            return 0;
+        }
     }
 
     // Vector operations

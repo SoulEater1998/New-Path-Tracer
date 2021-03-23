@@ -7,13 +7,12 @@
 #include "vector.h"
 #include "ray.h"
 
-using namespace std;
 // Axis-aligned bounding box
 struct AABBox {
-    XMFLOAT3 bl;     // Bottom left (min)
-    XMFLOAT3 tr;     // Top right   (max)
+    Vec bl;     // Bottom left (min)
+    Vec tr;     // Top right   (max)
 
-    AABBox (XMFLOAT3 bl_=XMFLOAT3(), XMFLOAT3 tr_=XMFLOAT3()){
+    AABBox (Vec bl_=Vec(), Vec tr_=Vec()){
         bl=bl_, tr=tr_;
     }
 
@@ -29,7 +28,7 @@ struct AABBox {
     }
 
     // Expand to fit point
-    void expand(const XMFLOAT3 &vec) {
+    void expand(const Vec &vec) {
         if (vec.x < bl.x) bl.x = vec.x ;
         if (vec.y < bl.y) bl.y = vec.y;
         if (vec.z < bl.z) bl.z = vec.z;
@@ -37,7 +36,7 @@ struct AABBox {
 
     // Returns longest axis: 0, 1, 2 for x, y, z respectively
     int get_longest_axis() {
-        XMFLOAT3 diff(tr.x - bl.x, tr.y - bl.y, tr.z - bl.z);
+        Vec diff = tr - bl;
         if (diff.x > diff.y && diff.x > diff.z) return 0;
         if (diff.y > diff.x && diff.y > diff.z) return 1;
         return 2;
@@ -48,20 +47,20 @@ struct AABBox {
         double tx1 = (bl.x - r.origin.x)*r.direction_inv.x;
         double tx2 = (tr.x - r.origin.x)*r.direction_inv.x;
 
-        double tmin = min(tx1, tx2);
-        double tmax = max(tx1, tx2);
+        double tmin = std::min(tx1, tx2);
+        double tmax = std::max(tx1, tx2);
 
         double ty1 = (bl.y - r.origin.y)*r.direction_inv.y;
         double ty2 = (tr.y - r.origin.y)*r.direction_inv.y;
 
-        tmin = max(tmin, min(ty1, ty2));
-        tmax = min(tmax, max(ty1, ty2));
+        tmin = std::max(tmin, std::min(ty1, ty2));
+        tmax = std::min(tmax, std::max(ty1, ty2));
 
         double tz1 = (bl.z - r.origin.z)*r.direction_inv.z;
         double tz2 = (tr.z - r.origin.z)*r.direction_inv.z;
 
-        tmin = max(tmin, min(tz1, tz2));
-        tmax = min(tmax, max(tz1, tz2));
+        tmin = std::max(tmin, std::min(tz1, tz2));
+        tmax = std::min(tmax, std::max(tz1, tz2));
         t = tmin;
 
         return tmax >= tmin;
