@@ -4,8 +4,7 @@
 #include "../lib/rand48/erand48.h"
 #include "vector.h"
 #include "ray.h"
-using namespace DirectX;
-using namespace DirectX::PackedVector;
+
 class Camera {
 
 private:

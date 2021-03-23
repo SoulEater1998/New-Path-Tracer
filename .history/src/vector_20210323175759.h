@@ -9,5 +9,6 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 // Vector 3
-//typedef XMFLOAT3 Vec;
+typedef Vec XMFLOAT3;
+
 #endif // VECTOR_H

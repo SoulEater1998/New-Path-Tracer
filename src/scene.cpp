@@ -20,12 +20,12 @@ ObjectIntersection Scene::intersect(const Ray &ray) {
     return isct;
 }
 
-Vec Scene::trace_ray(const Ray &ray, int depth, unsigned short*Xi) {
+XMVECTOR Scene::trace_ray(const Ray &ray, int depth, unsigned short*Xi) {
 
     ObjectIntersection isct = intersect(ray);
 
     // If no hit, return world colour
-    if (!isct.hit) return Vec();
+    if (!isct.hit) return XMVectorSet(0, 0, 0, 0);
     /*if (!isct.hit){
         float u, v;
         v = (acos(Vec(0,0,1).dot(ray.direction))/M_PI);

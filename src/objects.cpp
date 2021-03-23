@@ -9,9 +9,10 @@
 //#include "../lib/fastbvh/BVH.h"
 
 
-ObjectIntersection::ObjectIntersection(bool hit_, float u_, Vec n_, Material m_)
+ObjectIntersection::ObjectIntersection(bool hit_, float u_, FXMVECTOR n_, Material m_)
 {
-	hit=hit_, u=u_, n=n_, m=m_;
+    hit = hit_, u = u_, m = m_;
+    XMStoreFloat3(&n, n_);
 }
 
 

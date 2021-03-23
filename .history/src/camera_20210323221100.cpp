@@ -39,4 +39,10 @@ Ray Camera::get_ray(int x, int y, bool jitter, unsigned short *Xi) {
     XMVECTOR xmyd = XMLoadFloat3(&m_y_direction);
     XMVECTOR xp = xmp + xmd * 2 + xmxd * ((2.0f * x - m_width + x_jitter) / m_height) + xmyd * ((2.0f * y - m_width + y_jitter) / m_height);
     return Ray(xmp, XMVector3Normalize(xp - xmp));
+
+    Vec pixel = m_position + m_direction*2;
+    pixel = pixel + m_x_direction * ((2.0f * x - m_width + x_jitter) / m_height);
+    pixel = pixel + m_y_direction * ((2.0f * y - m_width + y_jitter) / m_height);
+
+    return Ray(m_position, (pixel-m_position).norm());
 }

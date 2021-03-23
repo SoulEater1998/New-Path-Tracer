@@ -5,8 +5,9 @@ Camera::Camera(FXMVECTOR position, FXMVECTOR target, int width, int height) {
     m_width = width;
     m_height = height;
     XMStoreFloat3(&m_position, position);
-    XMVECTOR xtar = target;
-    XMVECTOR xmp = position;
+
+    XMVECTOR xtar = XMLoadFloat3(&target);
+    XMVECTOR xmp = XMLoadFloat3(&m_position);
     XMVECTOR xmd = XMVector3Normalize(xtar - xmp);
     XMVECTOR xmxd = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), -xmd));
     XMVECTOR xmyd = XMVector3Normalize(XMVector3Cross(xmxd, xmd));
@@ -38,5 +39,10 @@ Ray Camera::get_ray(int x, int y, bool jitter, unsigned short *Xi) {
     XMVECTOR xmxd = XMLoadFloat3(&m_x_direction);
     XMVECTOR xmyd = XMLoadFloat3(&m_y_direction);
     XMVECTOR xp = xmp + xmd * 2 + xmxd * ((2.0f * x - m_width + x_jitter) / m_height) + xmyd * ((2.0f * y - m_width + y_jitter) / m_height);
-    return Ray(xmp, XMVector3Normalize(xp - xmp));
+
+    Vec pixel = m_position + m_direction*2;
+    pixel = pixel + m_x_direction * ((2.0f * x - m_width + x_jitter) / m_height);
+    pixel = pixel + m_y_direction * ((2.0f * y - m_width + y_jitter) / m_height);
+
+    return Ray(m_position, (pixel-m_position).norm());
 }

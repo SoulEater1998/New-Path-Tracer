@@ -12,17 +12,17 @@
 struct ObjectIntersection {
 	bool hit;	// If there was an intersection
 	float u;	// Distance to intersection along ray
-	Vec n;		// Normal of intersected face
+	XMFLOAT3 n;		// Normal of intersected face
 	Material m;	// Material of intersected face
 
-	ObjectIntersection(bool hit_=false, float u_=0, Vec n_=Vec(), Material m_=Material());
+	ObjectIntersection(bool hit_ = false, float u_ = 0, FXMVECTOR n_ = XMVectorSet(0, 0, 0, 0), Material m_ = Material());
 };
 
 
 class Object {
 
 public:
-	Vec m_p; // Position
+	XMFLOAT3 m_p; // Position
 	virtual ObjectIntersection get_intersection(const Ray &r) = 0;
 };
 
@@ -34,7 +34,7 @@ private:
 	Material m_m;	// Material
 
 public:
-	Sphere(Vec p_, float r_, Material m_);	
+	Sphere(FXMVECTOR p_, float r_, Material m_);	
 	virtual float get_radius();
 	virtual Material get_material();
 
