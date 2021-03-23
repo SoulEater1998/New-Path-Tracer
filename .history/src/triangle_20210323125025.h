@@ -42,14 +42,14 @@ struct Triangle {
     }
 
     // Checks if ray intersects with triangle. Returns true/false.
-    bool intersect(Ray ray, double &t, double tmin, Vec &norm) const {
+    bool intersect(Ray ray, float &t, float tmin, Vec &norm) const {
 
-        double u, v, t_temp=0;
+        float u, v, t_temp=0;
 
         Vec pvec = ray.direction.cross(e2);
-        double det = e1.dot(pvec);
+        float det = e1.dot(pvec);
         if (det == 0) return false;
-        double invDet = 1. / det;
+        float invDet = 1. / det;
         Vec tvec = ray.origin - v0;
         u = tvec.dot(pvec) * invDet;
         if (u < 0 || u > 1) return false;
@@ -70,15 +70,15 @@ struct Triangle {
     // Returns barycentric coordinates of point p on the triangle
     Vec barycentric(Vec p){
         Vec v2_ = p - v0;
-        double d00 = e1.dot(e1);
-        double d01 = e1.dot(e2);
-        double d11 = e2.dot(e2);
-        double d20 = v2_.dot(e1);
-        double d21 = v2_.dot(e2);
-        double d = d00*d11 - d01*d01;
-        double v = (d11*d20 - d01*d21) / d;
-        double w = (d00*d21 - d01*d20) / d;
-        double u = 1 - v - w;
+        float d00 = e1.dot(e1);
+        float d01 = e1.dot(e2);
+        float d11 = e2.dot(e2);
+        float d20 = v2_.dot(e1);
+        float d21 = v2_.dot(e2);
+        float d = d00*d11 - d01*d01;
+        float v = (d11*d20 - d01*d21) / d;
+        float w = (d00*d21 - d01*d20) / d;
+        float u = 1 - v - w;
         return Vec(u, v, w);
     }
 

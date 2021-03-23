@@ -62,16 +62,16 @@ _dorand48(unsigned short xseed[3])
 		xseed[2] = (unsigned short) accu;
 }
 
-float
+double
 erand48(unsigned short xseed[3])
 {
 		_dorand48(xseed);
-		return ldexp((float) xseed[0], -48) +
-			   ldexp((float) xseed[1], -32) +
-			   ldexp((float) xseed[2], -16);
+		return ldexp((double) xseed[0], -48) +
+			   ldexp((double) xseed[1], -32) +
+			   ldexp((double) xseed[2], -16);
 }
 
-float
+double
 drand48(void)
 {
 		return erand48(_rand48_seed);

@@ -6,15 +6,15 @@ Camera::Camera(Vec position, Vec target, int width, int height) {
     m_width_recp = 1./m_width;
     m_height = height;
     m_height_recp = 1./m_height;
-    m_ratio = (double)m_width/m_height;
+    m_ratio = (float)m_width/m_height;
 
     m_position = position;
     m_direction = (target - m_position).norm();
     m_x_direction = Vec(0, 0, 1).cross(m_direction * -1).norm();
     m_y_direction = m_x_direction.cross(m_direction).norm();
 
-    m_x_spacing = (2.0 * m_ratio)/(double)m_width;
-    m_y_spacing = (double)2.0/(double)m_height;
+    m_x_spacing = (2.0 * m_ratio)/(float)m_width;
+    m_y_spacing = (float)2.0/(float)m_height;
     m_x_spacing_half = m_x_spacing * 0.5;
     m_y_spacing_half = m_y_spacing * 0.5;
 }
@@ -25,8 +25,8 @@ int Camera::get_height() { return m_height; }
 // Returns ray from camera origin through pixel at x,y
 Ray Camera::get_ray(int x, int y, bool jitter, unsigned short *Xi) {
 
-    double x_jitter;
-    double y_jitter;
+    float x_jitter;
+    float y_jitter;
 
     // If jitter == true, jitter point for anti-aliasing
     if (jitter) {

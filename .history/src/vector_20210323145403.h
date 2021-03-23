@@ -14,7 +14,7 @@ struct Vec : XMFLOAT3 {
     Vec(float x_ = 0, float y_ = 0, float z_ = 0) : XMFLOAT3(x_, y_, z_) {}
 
     // Return x,y, and z component for 0, 1, and 2 respectively
-    double axis(uint32_t axis){
+    float axis(uint32_t axis){
         if (axis == 0) return x;
         if (axis == 1) return y;
         if (axis == 2) return z;
@@ -23,7 +23,7 @@ struct Vec : XMFLOAT3 {
     // Vector operations
     Vec operator+(const Vec &b) const { return Vec(x+b.x,y+b.y,z+b.z); }        // Addition
     Vec operator-(const Vec &b) const { return Vec(x-b.x,y-b.y,z-b.z); }        // Subtraction
-    Vec operator*(double b) const { return Vec(x*b,y*b,z*b); }                  // Multiplaction with scalar
+    Vec operator*(float b) const { return Vec(x*b,y*b,z*b); }                  // Multiplaction with scalar
     Vec operator/(float b) const { return Vec(x/b,y/b,z/b); }                   // Division with scalar
     Vec mult(const Vec &b) const { return Vec(x*b.x,y*b.y,z*b.z); }             // Multiplication
     Vec& norm(){ return *this = *this * (1/sqrt(x*x+y*y+z*z)); }                // Normalise vector

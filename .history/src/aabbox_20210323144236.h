@@ -44,21 +44,21 @@ struct AABBox {
     }
 
     // Check if ray intersects with box. Returns true/false and stores distance in t
-    bool intersection(const Ray &r, double &t) {
-        double tx1 = (bl.x - r.origin.x)*r.direction_inv.x;
-        double tx2 = (tr.x - r.origin.x)*r.direction_inv.x;
+    bool intersection(const Ray &r, float &t) {
+        float tx1 = (bl.x - r.origin.x)*r.direction_inv.x;
+        float tx2 = (tr.x - r.origin.x)*r.direction_inv.x;
 
-        double tmin = min(tx1, tx2);
-        double tmax = max(tx1, tx2);
+        float tmin = min(tx1, tx2);
+        float tmax = max(tx1, tx2);
 
-        double ty1 = (bl.y - r.origin.y)*r.direction_inv.y;
-        double ty2 = (tr.y - r.origin.y)*r.direction_inv.y;
+        float ty1 = (bl.y - r.origin.y)*r.direction_inv.y;
+        float ty2 = (tr.y - r.origin.y)*r.direction_inv.y;
 
         tmin = max(tmin, min(ty1, ty2));
         tmax = min(tmax, max(ty1, ty2));
 
-        double tz1 = (bl.z - r.origin.z)*r.direction_inv.z;
-        double tz2 = (tr.z - r.origin.z)*r.direction_inv.z;
+        float tz1 = (bl.z - r.origin.z)*r.direction_inv.z;
+        float tz2 = (tr.z - r.origin.z)*r.direction_inv.z;
 
         tmin = max(tmin, min(tz1, tz2));
         tmax = min(tmax, max(tz1, tz2));
