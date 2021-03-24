@@ -51,13 +51,13 @@ KDNode* KDNode::build(std::vector<Triangle*> &tris, int depth){
     for (long i=0; i<tris.size(); i++) {
         switch (axis) {
             case 0:
-                midpt.x >= tris[i]->get_midpoint().x ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
+                midpt.x >= XMVectorGetX(tris[i]->get_midpoint()) ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
                 break;
             case 1:
-                midpt.y >= tris[i]->get_midpoint().y ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
+                midpt.y >= XMVectorGetY(tris[i]->get_midpoint()) ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
                 break;
             case 2:
-                midpt.z >= tris[i]->get_midpoint().z ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
+                midpt.z >= XMVectorGetZ(tris[i]->get_midpoint()) ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
                 break;
         }
     }
