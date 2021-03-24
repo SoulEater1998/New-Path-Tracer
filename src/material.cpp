@@ -4,28 +4,31 @@
 #include "ray.h"
 #include "material.h"
 
-Material::Material(MaterialType t, Vec c, Vec e, Texture tex) {
-	m_type=t, m_colour=c, m_emission=e;
+Material::Material(MaterialType t, FXMVECTOR c, FXMVECTOR e, Texture tex) {
+	m_type=t;
+    XMStoreFloat3(&m_colour, c);
+    XMStoreFloat3(&m_emission, e);
     m_texture = tex;
 }
 
 MaterialType Material::get_type() const { return m_type; }
-Vec Material::get_colour() const { return m_colour; }
+XMFLOAT3 Material::get_colour() const { return m_colour; }
 
 // Get colour at UV coordinates u,v
-Vec Material::get_colour_at(float u, float v) const {
+XMFLOAT3 Material::get_colour_at(float u, float v) const {
     if (m_texture.is_loaded())
         return m_texture.get_pixel(u, v);
 
     return m_colour;
 }
-Vec Material::get_emission() const { return m_emission; }
+XMFLOAT3 Material::get_emission() const { return m_emission; }
 
-Ray Material::get_reflected_ray(const Ray &r, Vec &p, const Vec &n,	unsigned short *Xi) const {
+Ray Material::get_reflected_ray(const Ray &r, FXMVECTOR &p, const FXMVECTOR &n,	unsigned short *Xi) const {
 	// Ideal specular reflection
+    XMVECTOR xrd = XMLoadFloat3(&r.direction);
 	if (m_type == SPEC) {
         float roughness = 0.8;
-        Vec reflected = r.direction - n * 2 * n.dot(r.direction);
+        XMVECTOR reflected = xrd - n * 2 * XMVector3Dot(n, xrd);
         reflected = Vec(
             reflected.x + (erand48(Xi)-0.5)*roughness,
             reflected.y + (erand48(Xi)-0.5)*roughness,

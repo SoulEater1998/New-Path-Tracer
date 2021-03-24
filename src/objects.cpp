@@ -16,8 +16,9 @@ ObjectIntersection::ObjectIntersection(bool hit_, float u_, FXMVECTOR n_, Materi
 }
 
 
-Sphere::Sphere( Vec p_, float r_, Material m_ ) {
-	m_p=p_, m_r=r_, m_m=m_;
+Sphere::Sphere(FXMVECTOR p_, float r_, Material m_ ) {
+	m_r=r_, m_m=m_;
+    XMStoreFloat3(&m_p, p_);
 }
 
 float Sphere::get_radius() { return m_r; }
@@ -28,23 +29,30 @@ ObjectIntersection Sphere::get_intersection(const Ray &ray) {
 	// Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
 	bool hit = false;
 	float distance = 0;
-	Vec n = Vec();
-
-	Vec op = m_p-ray.origin;
-	float t, eps=1e-4, b=op.dot(ray.direction), det=b*b-op.dot(op)+m_r*m_r;
-	if (det<0) return ObjectIntersection(hit, distance, n, m_m); 
-	else det=sqrt(det);
-	distance = (t=b-det)>eps ? t : ((t=b+det)>eps ? t : 0);
+	XMVECTOR n = XMVectorZero();
+    XMVECTOR xmp = XMLoadFloat3(&m_p);
+    XMVECTOR xro = XMLoadFloat3(&ray.origin);
+    XMVECTOR xrd = XMLoadFloat3(&ray.direction);
+    XMVECTOR xop = xmp - xro;
+    float t, det;
+    float eps = 1e-4;
+    float b = XMVectorGetX(XMVector3Dot(xop, xrd));
+    if (b < 0)return ObjectIntersection(hit, distance, n, m_m);
+    float dist_sq = XMVectorGetX(XMVector3LengthSq(xop)) - b * b;
+    if (m_r < dist_sq) return ObjectIntersection(hit, distance, n, m_m);
+    det = sqrt(m_r * m_r - dist_sq);
+    distance = (t = b - det) > eps ? t : ((t = b + det) > eps ? t : 0);
 	if (distance != 0) hit = true, 
-		n = ((ray.origin + ray.direction * distance) - m_p).norm();
+		n = XMVector3Normalize((xro + xrd * distance) - xmp);
 
 	return ObjectIntersection(hit, distance, n, m_m);
 }
 
 
-Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
+Mesh::Mesh(FXMVECTOR p_, const char* file_path, Material m_) {
 
-	m_p=p_, m_m=m_;
+	m_m=m_;
+    XMStoreFloat3(&m_p, p_);
 
     std::string mtlbasepath;
     std::string inputfile = file_path;
@@ -61,7 +69,7 @@ Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
 	}
 	printf(" - Generating k-d tree...\n\n");
 
-    long shapes_size, indices_size, materials_size;
+    size_t shapes_size, indices_size, materials_size;
     shapes_size = m_shapes.size();
     materials_size = m_materials.size();
 
