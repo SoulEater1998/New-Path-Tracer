@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "material.h"
 #include "objects.h"
+using namespace DirectX;
 //#include "../lib/fastbvh/BVH.h"
 
 

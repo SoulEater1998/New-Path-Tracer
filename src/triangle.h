@@ -21,85 +21,75 @@ struct Triangle {
         CXMVECTOR t1_= XMVectorZero(), 
         CXMVECTOR t2_= XMVectorZero(), 
         Material *m_ = NULL){
-
-        v0=v0_, v1=v1_, v2=v2_, e1=v1-v0, e2=v2-v0, n=e1.cross(e2).norm();
-        t0=t0_, t1=t1_, t2=t2_;
+        XMStoreFloat3(&v0, v0_);
+        XMStoreFloat3(&v1, v1_);
+        XMStoreFloat3(&v2, v2_);
+        XMStoreFloat2(&t0, t0_);
+        XMStoreFloat2(&t1, t1_);
+        XMStoreFloat2(&t2, t2_);
+        XMStoreFloat3(&n, XMVector3Cross(v1_ - v0_, v2_ - v0_));
         m=m_;
     }
 
     // Returns axis aligned bounding box that contains the triangle
     AABBox get_bounding_box(){
-        Vec bl = Vec(
-                min (min(v0.x, v1.x), v2.x ) ,
-                min (min(v0.y, v1.y), v2.y ) ,
-                min (min(v0.z, v1.z), v2.z )
+        XMFLOAT3 bl = XMFLOAT3(
+            min(min(v0.x, v1.x), v2.x),
+            min(min(v0.y, v1.y), v2.y),
+            min(min(v0.z, v1.z), v2.z)
         );
-        Vec tr = Vec(
-                max (max(v0.x, v1.x), v2.x ) ,
-                max (max(v0.y, v1.y), v2.y ) ,
-                max (max(v0.z, v1.z), v2.z )
+        XMFLOAT3 tr = XMFLOAT3(
+            max(max(v0.x, v1.x), v2.x),
+            max(max(v0.y, v1.y), v2.y),
+            max(max(v0.z, v1.z), v2.z)
         );
 
         return AABBox(bl, tr);
     }
 
     // Returns the midpoint of the triangle
-    Vec get_midpoint(){
-        return (v0 + v1 + v2)/3;
-    }
 
     // Checks if ray intersects with triangle. Returns true/false.
-    bool intersect(Ray ray, float &t, float tmin, Vec &norm) const {
-
-        float u, v, t_temp=0;
-
-        Vec pvec = ray.direction.cross(e2);
-        float det = e1.dot(pvec);
-        if (det == 0) return false;
-        float invDet = 1. / det;
-        Vec tvec = ray.origin - v0;
-        u = tvec.dot(pvec) * invDet;
-        if (u < 0 || u > 1) return false;
-        Vec qvec = tvec.cross(e1);
-        v = ray.direction.dot(qvec) * invDet;
-        if (v < 0 || u + v > 1) return false;
-        t_temp = e2.dot(qvec) * invDet; // Set distance along ray to intersection
-        if (t_temp < tmin) {
-            if (t_temp > 1e-9 ){    // Fairly arbritarily small value, scared to change
-                t = t_temp;         // it as it works.
-                norm = n;
-                return true;
-            }
-        }
-        return false;
+    bool intersect(Ray ray, XMFLOAT3 &baryCentric, XMFLOAT3&norm) const {
+        XMVECTOR xrd = XMLoadFloat3(&ray.direction);
+        XMVECTOR xv0 = XMLoadFloat3(&v0);
+        XMVECTOR xv1 = XMLoadFloat3(&v1);
+        XMVECTOR xv2 = XMLoadFloat3(&v2);
+        XMVECTOR xro = XMLoadFloat3(&ray.origin);
+        //step1:
+        //find the intersect point of plane and line
+        XMVECTOR plane = XMPlaneFromPoints(xv0, xv1, xv2);
+        XMVECTOR inter_point = XMPlaneIntersectLine(plane, xro, xro + xrd);
+        //step2:
+        //check if the intersect point is on the ray
+        if (XMVector3Equal(inter_point, XMVectorSplatQNaN())) return false;
+        if (XMVectorGetX(XMVector3Dot(xrd, inter_point - xro)) < 0) return false;
+        //step3:
+        //check if the intersect point is in the triangle
+        XMVECTOR xd00 = XMVector3Dot(xv1 - xv0, xv1 - xv0);
+        XMVECTOR xd01 = XMVector3Dot(xv1 - xv0, xv2 - xv0);
+        XMVECTOR xd11 = XMVector3Dot(xv2 - xv0, xv2 - xv0);
+        XMVECTOR xd20 = XMVector3Dot(inter_point - xv0, xv1 - xv0);
+        XMVECTOR xd21 = XMVector3Dot(inter_point - xv0, xv2 - xv0);
+        XMVECTOR xd = xd00 * xd11 - xd01 * xd01;
+        float v = XMVectorGetX((xd11 * xd20 - xd01 * xd21) / xd);
+        float w = XMVectorGetX((xd00 * xd21 - xd01 * xd20) / xd);
+        float u = 1 - v - w;
+        if (v < 0 || w < 0 || u < 0) return false;
+        baryCentric.x = u;
+        baryCentric.y = v;
+        baryCentric.z = w;
+        norm = n;
+        return true;
     }
 
     // Returns barycentric coordinates of point p on the triangle
-    Vec barycentric(Vec p){
-        Vec v2_ = p - v0;
-        float d00 = e1.dot(e1);
-        float d01 = e1.dot(e2);
-        float d11 = e2.dot(e2);
-        float d20 = v2_.dot(e1);
-        float d21 = v2_.dot(e2);
-        float d = d00*d11 - d01*d01;
-        float v = (d11*d20 - d01*d21) / d;
-        float w = (d00*d21 - d01*d20) / d;
-        float u = 1 - v - w;
-        return Vec(u, v, w);
-    }
 
     // Returns the colour at point p on the triangle
-    Vec get_colour_at(Vec p){
-        if(m==NULL) return Vec(1,0,1);
+    XMFLOAT3 get_colour_at(XMFLOAT3 b){
+        if(m==NULL) return XMFLOAT3(1,0,1);
 
-        Vec b = barycentric(p);
-        Vec c = Vec();
-        c = c + (t0 * b.x);
-        c = c + (t1 * b.y);
-        c = c + (t2 * b.z);
-
-        return m->get_colour_at(c.x, c.y);
+        return m->get_colour_at(t0.x * b.x + t1.x * b.y + t2.x * b.z, t0.y * b.x + t1.y * b.y + t2.y * b.z);
     }
 
 };
