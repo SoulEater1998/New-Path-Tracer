@@ -34,13 +34,15 @@ KDNode* KDNode::build(std::vector<Triangle*> &tris, int depth){
     }
 
     node->box = tris[0]->get_bounding_box();
-    Vec midpt = Vec();
-    float tris_recp = 1.0/tris.size();
+    XMVECTOR xmidpt = XMVectorZero();
 
     for (long i=1; i<tris.size(); i++) {
         node->box.expand(tris[i]->get_bounding_box());
-        midpt = midpt + (tris[i]->get_midpoint() * tris_recp);
+        xmidpt = xmidpt + (tris[i]->get_midpoint() / (float)tris.size());
     }
+
+    XMFLOAT3 midpt;
+    XMStoreFloat3(&midpt, xmidpt);
 
     std::vector<Triangle*> left_tris;
     std::vector<Triangle*> right_tris;

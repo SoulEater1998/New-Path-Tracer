@@ -164,10 +164,10 @@ Mesh::Mesh(FXMVECTOR p_, const char* file_path, Material m_) {
 // Check if ray intersects with mesh. Returns ObjectIntersection data structure
 ObjectIntersection Mesh::get_intersection(const Ray &ray) {
     float t=0, tmin=INFINITY;
-    Vec normal = Vec();
-    Vec colour = Vec();
+    XMVECTOR normal = XMVectorZero();
+    XMFLOAT3 colour = XMFLOAT3(0, 0, 0);
     bool hit = node->hit(node, ray, t, tmin, normal, colour);
     //bool hit = bvh.getIntersection(ray, t, tmin, normal);
-    return ObjectIntersection(hit, tmin, normal, Material(DIFF, colour, Vec()));
+    return ObjectIntersection(hit, tmin, normal, Material(DIFF, colour));
 
 }

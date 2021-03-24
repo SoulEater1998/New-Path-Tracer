@@ -48,9 +48,15 @@ struct Triangle {
     }
 
     // Returns the midpoint of the triangle
+    XMVECTOR get_midpoint() {
+        XMVECTOR xv0 = XMLoadFloat3(&v0);
+        XMVECTOR xv1 = XMLoadFloat3(&v1);
+        XMVECTOR xv2 = XMLoadFloat3(&v2);
+        return (xv0 + xv1 + xv2) / 3;
+    }
 
     // Checks if ray intersects with triangle. Returns true/false.
-    bool intersect(Ray ray, XMFLOAT3 &baryCentric, XMFLOAT3&norm) const {
+    bool intersect(Ray ray, float &distance, XMFLOAT3 &baryCentric, XMFLOAT3 &norm) const {
         XMVECTOR xrd = XMLoadFloat3(&ray.direction);
         XMVECTOR xv0 = XMLoadFloat3(&v0);
         XMVECTOR xv1 = XMLoadFloat3(&v1);
@@ -62,7 +68,7 @@ struct Triangle {
         XMVECTOR inter_point = XMPlaneIntersectLine(plane, xro, xro + xrd);
         //step2:
         //check if the intersect point is on the ray
-        if (XMVector3Equal(inter_point, XMVectorSplatQNaN())) return false;
+        if (XMVector3Equal(inter_point, g_XMQNaN)) return false;
         if (XMVectorGetX(XMVector3Dot(xrd, inter_point - xro)) < 0) return false;
         //step3:
         //check if the intersect point is in the triangle
@@ -80,6 +86,7 @@ struct Triangle {
         baryCentric.y = v;
         baryCentric.z = w;
         norm = n;
+        distance = XMVectorGetX(XMVector3Length(inter_point - xro));
         return true;
     }
 
