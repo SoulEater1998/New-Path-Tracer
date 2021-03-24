@@ -29,11 +29,8 @@ Ray Material::get_reflected_ray(const Ray &r, FXMVECTOR &p, const FXMVECTOR &n,	
 	if (m_type == SPEC) {
         float roughness = 0.8;
         XMVECTOR reflected = xrd - n * 2 * XMVector3Dot(n, xrd);
-        reflected = Vec(
-            reflected.x + (erand48(Xi)-0.5)*roughness,
-            reflected.y + (erand48(Xi)-0.5)*roughness,
-            reflected.z + (erand48(Xi)-0.5)*roughness
-        ).norm();
+        XMVECTOR jitter = XMVectorSet((erand48(Xi) - 0.5) * roughness, (erand48(Xi) - 0.5) * roughness, (erand48(Xi) - 0.5) * roughness, 0.0f);
+        reflected = XMVector3Normalize(reflected + jitter);
 
         return Ray(p, reflected);
 		//return Ray(p, r.direction - n * 2 * n.dot(r.direction));
@@ -42,8 +39,8 @@ Ray Material::get_reflected_ray(const Ray &r, FXMVECTOR &p, const FXMVECTOR &n,	
 	if (m_type == DIFF) {
 		Vec nl=n.dot(r.direction)<0?n:n*-1;
 		float r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
-        Vec w=nl, u=((fabs(w.x)>.1?Vec(0,1):Vec(1))%w).norm(), v=w%u;
-        Vec d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).norm();
+        Vec w = nl, u = ((fabs(w.x) > .1 ? Vec(0, 1) : Vec(1)) % w).norm(), v = w % u;
+        Vec d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).norm();
 
         return Ray(p, d);
 	}
