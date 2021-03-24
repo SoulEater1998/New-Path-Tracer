@@ -19,12 +19,12 @@ private:
 
 
 public:
-	Material(MaterialType t = DIFF, FXMVECTOR c = XMVectorSet(1, 1, 1, 0), FXMVECTOR e = XMVectorZero(), Texture tex = Texture());
+	Material(MaterialType t = DIFF, XMFLOAT3 c = XMFLOAT3(1, 1, 1), XMFLOAT3 e = XMFLOAT3(0, 0, 0), Texture tex = Texture());
 	MaterialType get_type() const;
 	XMFLOAT3 get_colour() const;
 	XMFLOAT3 get_colour_at(float u, float v) const;
 	XMFLOAT3 get_emission() const;
-	Ray get_reflected_ray( const Ray &r, FXMVECTOR&p, const FXMVECTOR &n, unsigned short *Xi ) const;
+	Ray get_reflected_ray( const Ray &r, FXMVECTOR &p, const FXMVECTOR &n, unsigned short *Xi ) const;
 
 };
 

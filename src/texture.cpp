@@ -17,23 +17,23 @@ Texture::Texture(const char *filename) {
 }
 
 // Get pixel at texture coordinates x,y
-Vec Texture::get_pixel(unsigned x, unsigned y) const {
+XMFLOAT3 Texture::get_pixel(unsigned x, unsigned y) const {
 
     if (!loaded)
-        return (Vec(1,0,1));
+        return (XMFLOAT3(1,0,1));
 
     float r, g, b;
-    r = (float)image.at(y*width*4 + x    )/255.;
-    g = (float)image.at(y*width*4 + x + 1)/255.;
-    b = (float)image.at(y*width*4 + x + 2)/255.;
-    return Vec(r, g, b);
+    r = (float)image.at(y * width * 4 + x) / 255.;
+    g = (float)image.at(y * width * 4 + x + 1) / 255.;
+    b = (float)image.at(y * width * 4 + x + 2) / 255.;
+    return XMFLOAT3(r, g, b);
 }
 
 // Get pixel at normalised texture coordinates u,v
-Vec Texture::get_pixel(float u, float v) const {
+XMFLOAT3 Texture::get_pixel(float u, float v) const {
 
     if (!loaded)
-        return (Vec(1,0,1));
+        return (XMFLOAT3(1,0,1));
 
     int x = (fmod(fabs(u), 1.0)) * (width-1);
     int y = (1.-fmod(fabs(v), 1.0)) * (height-1);
@@ -43,11 +43,11 @@ Vec Texture::get_pixel(float u, float v) const {
         r = (float)image.at(y*width*4 + x*4    )/255.;
         g = (float)image.at(y*width*4 + x*4 + 1)/255.;
         b = (float)image.at(y*width*4 + x*4 + 2)/255.;
-        return Vec(r, g, b);
+        return XMFLOAT3(r, g, b);
     }
     catch (const std::out_of_range& e){
         printf("error with uv, yx: %lf, %lf - %i, %i (width, height: %i, %i) \n", u, v, x, y, width, height);
-        return Vec(0,1,0);
+        return XMFLOAT3(0,1,0);
     }
 }
 

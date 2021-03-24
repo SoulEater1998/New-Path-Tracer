@@ -81,13 +81,14 @@ Mesh::Mesh(FXMVECTOR p_, const char* file_path, Material m_) {
         if (!m_materials[i].diffuse_texname.empty()){
             if (m_materials[i].diffuse_texname[0] == '/') texture_path = m_materials[i].diffuse_texname;
             texture_path = mtlbasepath + m_materials[i].diffuse_texname;
-            materials.push_back( Material(DIFF, Vec(1,1,1), Vec(), texture_path.c_str()) );
+            materials.push_back(Material(DIFF, XMFLOAT3(1, 1, 1), XMFLOAT3(0, 0, 0), texture_path.c_str()));
         }
         else {
-            materials.push_back( Material(DIFF, Vec(1,1,1), Vec()) );
+            materials.push_back(Material(DIFF, XMFLOAT3(1, 1, 1), XMFLOAT3(0, 0, 0)));
         }
 
     }
+    XMVECTOR xmp = XMLoadFloat3(&m_p);
 
     // Load triangles from obj
     for (int i = 0; i < shapes_size; i++) {
@@ -95,50 +96,53 @@ Mesh::Mesh(FXMVECTOR p_, const char* file_path, Material m_) {
         for (size_t f = 0; f < indices_size; f++) {
 
             // Triangle vertex coordinates
-            Vec v0_ = Vec(
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f] * 3     ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f] * 3 + 1 ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f] * 3 + 2 ]
-            ) + m_p;
+            XMVECTOR v0_ = XMVectorSet(
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f] * 3 + 0],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f] * 3 + 1],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f] * 3 + 2],
+                0.0f
+            ) + xmp;
 
-            Vec v1_ = Vec(
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 1] * 3     ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 1] * 3 + 1 ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 1] * 3 + 2 ]
-            ) + m_p;
+            XMVECTOR v1_ = XMVectorSet(
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 1] * 3 + 0],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 1] * 3 + 1],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 1] * 3 + 2],
+                0.0f
+            ) + xmp;
 
-            Vec v2_ = Vec(
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 2] * 3     ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 2] * 3 + 1 ],
-                    m_shapes[i].mesh.positions[ m_shapes[i].mesh.indices[3*f + 2] * 3 + 2 ]
-            ) + m_p;
+            XMVECTOR v2_ = XMVectorSet(
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 2] * 3 + 0],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 2] * 3 + 1],
+                m_shapes[i].mesh.positions[m_shapes[i].mesh.indices[3 * f + 2] * 3 + 2],
+                0.0f
+            ) + xmp;
 
-            Vec t0_, t1_, t2_;
+            XMVECTOR t0_, t1_, t2_;
 
             //Attempt to load triangle texture coordinates
             if (m_shapes[i].mesh.indices[3 * f + 2] * 2 + 1 < m_shapes[i].mesh.texcoords.size()) {
-                t0_ = Vec(
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f] * 2],
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f] * 2 + 1],
-                        0
+                t0_ = XMVectorSet(
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f] * 2],
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f] * 2 + 1],
+                    0, 0
                 );
 
-                t1_ = Vec(
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 1] * 2],
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 1] * 2 + 1],
-                        0
+                t1_ = XMVectorSet(
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 1] * 2],
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 1] * 2 + 1],
+                    0, 0
                 );
 
-                t2_ = Vec(
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 2] * 2],
-                        m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 2] * 2 + 1],
-                        0
+                t2_ = XMVectorSet(
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 2] * 2],
+                    m_shapes[i].mesh.texcoords[m_shapes[i].mesh.indices[3 * f + 2] * 2 + 1],
+                    0, 0
                 );
             }
             else {
-                t0_=Vec();
-                t1_=Vec();
-                t2_=Vec();
+                t0_= XMVectorZero();
+                t1_= XMVectorZero();
+                t2_= XMVectorZero();
             }
 
             if (m_shapes[i].mesh.material_ids[ f ] < materials.size())

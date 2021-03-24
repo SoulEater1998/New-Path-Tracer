@@ -4,10 +4,10 @@
 #include "ray.h"
 #include "material.h"
 
-Material::Material(MaterialType t, FXMVECTOR c, FXMVECTOR e, Texture tex) {
-	m_type=t;
-    XMStoreFloat3(&m_colour, c);
-    XMStoreFloat3(&m_emission, e);
+Material::Material(MaterialType t, XMFLOAT3 c, XMFLOAT3 e, Texture tex) {
+    m_type = t;
+    m_colour = c;
+    m_emission = e;
     m_texture = tex;
 }
 
@@ -37,10 +37,14 @@ Ray Material::get_reflected_ray(const Ray &r, FXMVECTOR &p, const FXMVECTOR &n,	
 	}
 	// Ideal diffuse reflection
 	if (m_type == DIFF) {
-		Vec nl=n.dot(r.direction)<0?n:n*-1;
-		float r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
-        Vec w = nl, u = ((fabs(w.x) > .1 ? Vec(0, 1) : Vec(1)) % w).norm(), v = w % u;
-        Vec d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).norm();
+        XMVECTOR nl = XMVectorGetX(XMVector3Dot(n, xrd)) < 0 ? n : n * -1;
+        float r1 = 2 * XM_PI * erand48(Xi);
+        float r2 = erand48(Xi);
+        float r2s = sqrt(r2);
+        XMVECTOR w = nl;
+        XMVECTOR u = XMVector3Normalize(XMVector3Cross((fabs(XMVectorGetX(w)) > .1 ? XMVectorSet(0, 1, 0, 0) : XMVectorSet(1, 0, 0, 0)), w));
+        XMVECTOR v = XMVector3Cross(w, u);
+        XMVECTOR d = XMVector3Normalize(u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2));
 
         return Ray(p, d);
 	}

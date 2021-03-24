@@ -24,9 +24,9 @@ $ ./pathtracer <number of samples>
 ## To Do
 
 - [ ] Accelerating vector operation with SIMD
-- [ ] A REAL Monte Carlo integrator
+- [ ] **A REAL Monte Carlo integrator with MIS(Multiple Importance Sampling)**
 - [ ] QT GUI
 - [ ] .xml loader
-- [ ] path guiding
-- [ ] bi-directional path tracing
+- [ ] **path guiding**
+- [ ] **bi-directional path tracing**
 - [ ] animation

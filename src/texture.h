@@ -12,8 +12,8 @@ private:
 public:
     Texture(const char* filename);
     Texture(){};
-    Vec get_pixel(unsigned x, unsigned y) const;
-    Vec get_pixel(float u, float v) const;
+    XMFLOAT3 get_pixel(unsigned x, unsigned y) const;
+    XMFLOAT3 get_pixel(float u, float v) const;
     bool is_loaded() const;
 };
 
