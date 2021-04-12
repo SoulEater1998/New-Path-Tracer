@@ -20,6 +20,12 @@ ObjectIntersection Scene::intersect(const Ray &ray) {
     return isct;
 }
 
+Vec Scene::get_normal(const Ray& ray) {
+    ObjectIntersection isct = intersect(ray);
+    if (!isct.hit) return Vec();
+    return isct.n;
+}
+
 Vec Scene::trace_ray(const Ray &ray, int depth, unsigned short*Xi) {
 
     ObjectIntersection isct = intersect(ray);

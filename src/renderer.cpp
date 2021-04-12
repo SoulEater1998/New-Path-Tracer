@@ -29,8 +29,16 @@ void Renderer::render(int samples) {
         fprintf(stderr, "\rRendering (%i samples): %.2f%% ",      // Prints
                 samples, (double)y/height*100);                   // progress
 
+        
+
         for (int x=0; x<width; x++){
             Vec col = Vec();
+
+            if (samples == 0) {
+                Ray ray = m_camera->get_ray(x, y, false, Xi);
+                m_pixel_buffer[(y)*width + x] = m_scene->get_normal(ray);
+                continue;
+            }
 
             for (int a=0; a<samples; a++){
                 Ray ray = m_camera->get_ray(x, y, a>0, Xi);

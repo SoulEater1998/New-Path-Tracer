@@ -13,6 +13,7 @@ public:
     Scene(){};
     void add(Object *object);
     ObjectIntersection intersect(const Ray &ray);
+    Vec get_normal(const Ray& ray);
     Vec trace_ray(const Ray &ray, int depth, unsigned short*Xi);
 };
 
