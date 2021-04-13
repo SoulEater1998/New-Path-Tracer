@@ -8,9 +8,9 @@ void Scene::add(Object *object) {
 ObjectIntersection Scene::intersect(const Ray &ray) {
     ObjectIntersection isct = ObjectIntersection();
     ObjectIntersection temp;
-    long size = m_objects.size();
+    size_t size = m_objects.size();
 
-    for (int i=0; i<size; i++){
+    for (size_t i=0; i<size; i++){
         temp = m_objects.at((unsigned)i)->get_intersection(ray);
 
         if (temp.hit) {

@@ -47,7 +47,7 @@ Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
 
     std::string mtlbasepath;
     std::string inputfile = file_path;
-    unsigned long pos = inputfile.find_last_of("/");
+    size_t pos = inputfile.find_last_of("/");
     mtlbasepath = inputfile.substr(0, pos+1);
 
     printf("Loading %s...\n", file_path);
@@ -60,13 +60,13 @@ Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
 	}
 	printf(" - Generating k-d tree...\n\n");
 
-    long shapes_size, indices_size, materials_size;
+    size_t shapes_size, indices_size, materials_size;
     shapes_size = m_shapes.size();
     materials_size = m_materials.size();
 
     // Load materials/textures from obj
     // TODO: Only texture is loaded at the moment, need to implement material types and colours
-    for (int i=0; i<materials_size; i++) {
+    for (size_t i=0; i<materials_size; i++) {
         std::string texture_path = "";
 
         if (!m_materials[i].diffuse_texname.empty()){
@@ -81,7 +81,7 @@ Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
     }
 
     // Load triangles from obj
-    for (int i = 0; i < shapes_size; i++) {
+    for (size_t i = 0; i < shapes_size; i++) {
         indices_size = m_shapes[i].mesh.indices.size() / 3;
         for (size_t f = 0; f < indices_size; f++) {
 

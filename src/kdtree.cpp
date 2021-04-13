@@ -104,8 +104,8 @@ bool KDNode::hit(KDNode *node, const Ray &ray, double &t, double &tmin, Vec &nor
             return hit_left || hit_right;
         }
         else {
-            long triangles_size = node->triangles.size();
-            for (long i=0; i<triangles_size; i++) {
+            size_t triangles_size = node->triangles.size();
+            for (size_t i=0; i<triangles_size; i++) {
                 if (node->triangles[i]->intersect(ray, t, tmin, normal)){
                     hit_tri = true;
                     tmin = t;
