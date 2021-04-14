@@ -17,6 +17,7 @@ public:
 
     KDNode(){};
     KDNode* build(std::vector<Triangle*> &tris, int depth);
+    KDNode* KDNode::build(std::vector<Triangle*>& tris);
     bool hit (KDNode* node, const Ray &ray, double &t, double &tmin, Vec &normal, Vec &c);
 };
 

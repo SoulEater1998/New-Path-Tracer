@@ -83,6 +83,37 @@ KDNode* KDNode::build(std::vector<Triangle*> &tris, int depth){
     return node;
 }
 
+KDNode* KDNode::build(std::vector<Triangle*>& tris) {
+    KDNode* node = new KDNode();
+    node->leaf = false;
+    node->triangles = std::vector<Triangle*>();
+    node->left = NULL;
+    node->right = NULL;
+    node->box = AABBox();
+
+    if (tris.size() == 0) return node;
+
+    if (tris.size() <= 4) {
+        node->triangles = tris;
+        node->leaf = true;
+        node->box = tris[0]->get_bounding_box();
+
+        for (long i = 1; i < tris.size(); i++) {
+            node->box.expand(tris[i]->get_bounding_box());
+        }
+
+        node->left = new KDNode();
+        node->right = new KDNode();
+        node->left->triangles = std::vector<Triangle*>();
+        node->right->triangles = std::vector<Triangle*>();
+
+        return node;
+    }
+
+
+    return NULL;
+}
+
 // Finds nearest triangle in kd tree that intersects with ray.
 bool KDNode::hit(KDNode *node, const Ray &ray, double &t, double &tmin, Vec &normal, Vec &c) {
     double dist;
