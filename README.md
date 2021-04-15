@@ -13,4 +13,7 @@ $ make
 
 ## Features
 
-- Accelerating vector operation with SIMD
+- using SAH(Bounding Volume Hierarchy) to build BVH
+
+## TODO
+

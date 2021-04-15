@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <math.h>
 #include <stdint.h>
+//#define SAH
 
 // Vector 3
 struct Vec {
@@ -11,7 +12,7 @@ struct Vec {
     Vec(double x_=0, double y_=0, double z_=0) : x(x_), y(y_), z(z_) {}
 
     // Return x,y, and z component for 0, 1, and 2 respectively
-    double axis(uint32_t axis){
+    double axis(uint32_t axis) {
         if (axis == 0) return x;
         if (axis == 1) return y;
         if (axis == 2) return z;

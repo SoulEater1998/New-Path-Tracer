@@ -142,7 +142,11 @@ Mesh::Mesh(Vec p_, const char* file_path, Material m_) {
     // Clean up
     m_shapes.clear();
     m_materials.clear();
-    node = KDNode().build(tris, 0);
+
+    node = KDNode().build(tris);
+
+    //node = KDNode().build(tris, 0);
+
     printf("\n");
 	//bvh = BVH(&tris);
 }

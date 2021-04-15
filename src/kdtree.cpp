@@ -5,6 +5,8 @@
 #include "triangle.h"
 #include "kdtree.h"
 
+#define nBuckets 12
+
 // Build KD tree for tris
 KDNode* KDNode::build(std::vector<Triangle*> &tris, int depth){
     KDNode* node = new KDNode();
@@ -83,6 +85,8 @@ KDNode* KDNode::build(std::vector<Triangle*> &tris, int depth){
     return node;
 }
 
+
+
 KDNode* KDNode::build(std::vector<Triangle*>& tris) {
     KDNode* node = new KDNode();
     node->leaf = false;
@@ -90,10 +94,13 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris) {
     node->left = NULL;
     node->right = NULL;
     node->box = AABBox();
+#ifdef SAH
+    printf("I am in\n");
+#endif // SAH
 
     if (tris.size() == 0) return node;
 
-    if (tris.size() <= 4) {
+    if (tris.size() <= 6) {
         node->triangles = tris;
         node->leaf = true;
         node->box = tris[0]->get_bounding_box();
@@ -104,9 +111,92 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris) {
 
         return node;
     }
+#ifdef SAH
+    printf("there are %ld triangles\n",tris.size());
+#endif // SAH
+    node->box = tris[0]->get_bounding_box();
+
+    for (size_t i = 1; i < tris.size(); i++) {
+        node->box.expand(tris[i]->get_bounding_box());
+    }
+
+    int dim = node->box.get_longest_axis();
+    BucketInfo buckets[nBuckets];
+
+    for (size_t i = 0; i < tris.size(); ++i) {
+        int b = nBuckets * (tris[i]->get_bounding_box().get_centroid().axis(dim) - node->box.bl.axis(dim)) / (node->box.tr.axis(dim) - node->box.bl.axis(dim));
+        if (b == nBuckets) b = nBuckets - 1;
+        if (buckets[b].count == 0) {
+            buckets[b].bounds = tris[i]->get_bounding_box();
+            buckets[b].count++;
+        }
+        else {
+            buckets[b].bounds.expand(tris[i]->get_bounding_box());
+            buckets[b].count++;
+        }
+    }
+
+    double cost[nBuckets - 1];
+    for (int i = 0; i < nBuckets - 1; ++i) {
+        AABBox b0, b1;
+        int count0 = 0, count1 = 0;
+        for (int j = 0; j <= i; ++j) {
+            if (buckets[j].count != 0) {
+                if (count0 == 0) {
+                    b0 = buckets[j].bounds;
+                    count0 += buckets[j].count;
+                }
+                else {
+                    b0.expand(buckets[j].bounds);
+                    count0 += buckets[j].count;
+                }
+            }
+        }
+        for (int j = i + 1; j < nBuckets; ++j) {
+            if (buckets[j].count != 0) {
+                if (count1 == 0) {
+                    b1 = buckets[j].bounds;
+                    count1 += buckets[j].count;
+                }
+                else {
+                    b1.expand(buckets[j].bounds);
+                    count1 += buckets[j].count;
+                }
+            }
+        }
+        cost[i] = .125f + (count0 * b0.SurfaceArea() + count1 * b1.SurfaceArea()) / node->box.SurfaceArea();
+    }
+
+    double minCost = cost[0];
+    int minCostSplitBucket = 0;
+    for (int i = 1; i < nBuckets - 1; ++i) {
+        if (cost[i] < minCost) {
+            minCost = cost[i];
+            minCostSplitBucket = i;
+        }
+    }
+#ifdef SAH
+    printf("splite in %dth bucket\n",minCostSplitBucket);
+#endif // SAH
+    std::vector<Triangle*> left_tris;
+    std::vector<Triangle*> right_tris;
+
+    for (size_t i = 0; i < tris.size(); ++i) {
+        int b = nBuckets * (tris[i]->get_bounding_box().get_centroid().axis(dim) - node->box.bl.axis(dim)) / (node->box.tr.axis(dim) - node->box.bl.axis(dim));
+        if (b == nBuckets) b = nBuckets - 1;
+        if (b <= minCostSplitBucket) {
+            left_tris.push_back(tris[i]);
+        }
+        else {
+            right_tris.push_back(tris[i]);
+        }
+    }
 
 
-    return NULL;
+    node->left = build(left_tris);
+    node->right = build(right_tris);
+
+    return node;
 }
 
 // Finds nearest triangle in kd tree that intersects with ray.

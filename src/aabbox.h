@@ -34,6 +34,14 @@ struct AABBox {
         if (vec.z < bl.z) bl.z = vec.z;
     }
 
+    double SurfaceArea() {
+        Vec d = tr - bl;
+        return 2 * (d.x * d.y + d.y * d.z + d.z * d.x);
+    }
+    Vec get_centroid() {
+        return (tr + bl) * 0.5;
+    }
+
     // Returns longest axis: 0, 1, 2 for x, y, z respectively
     int get_longest_axis() {
         Vec diff = tr - bl;
