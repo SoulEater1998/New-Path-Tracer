@@ -13,12 +13,12 @@ $ make
 
 ## Features
 
-- using SAH(Bounding Volume Hierarchy) to build BVH
+- use SAH(Surface Area Heuristic) to build BVH
 
 ## TODO
 
 - [ ] Accelerating vector operation with SIMD
-- [x] use BVH
+- [x] use SAH(Surface Area Heuristic) to build BVH
 - [x] **A REAL Monte Carlo integrator with Disney BSDF**
 - [ ] **MIS(Multiple Importance Sampling)**
 - [ ] QT GUI
