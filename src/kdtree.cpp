@@ -102,11 +102,6 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris) {
             node->box.expand(tris[i]->get_bounding_box());
         }
 
-        node->left = new KDNode();
-        node->right = new KDNode();
-        node->left->triangles = std::vector<Triangle*>();
-        node->right->triangles = std::vector<Triangle*>();
-
         return node;
     }
 
